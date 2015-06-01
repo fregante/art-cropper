@@ -1,0 +1,63 @@
+/**
+ * TRUMPS
+ * helpers and overrides, usually applied directly to HTML rather than @extend'ed
+ */
+.u-avoid-break-inside {
+	display: inline-block;
+}
+.thick {
+	font-weight: bold;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+.thin {
+	font-weight: 100;
+}
+
+.u-block-element {
+	display: block;
+}
+
+.cb {
+	clear: both;
+}
+.fl {
+	float: left;
+}
+.fr {
+	float: right;
+}
+
+.screen-reader-text,
+.assistive-text,
+.visuallyhidden {
+	border: 0;
+	clip: rect(0 0 0 0);
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	width: 1px;
+}
+
+.img--fill {
+	width: 100%;
+	height: auto;
+	display: block;
+}
+
+.img--left {
+	display: inline;
+	float: left;
+}
+.img--right {
+	display: inline;
+	float: right;
+}
+.img--center {
+	clear: both;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}

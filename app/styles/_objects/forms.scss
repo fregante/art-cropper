@@ -1,0 +1,94 @@
+//2014-12-17
+%os-element-reset {
+	display: inline-block;
+	overflow: visible;
+
+	padding: 0;
+	margin: 0;
+	outline: 0;
+
+	font: inherit;
+	color: inherit;
+	background-color: transparent;
+	border: none;
+	letter-spacing: inherit;
+
+	text-transform: inherit;
+
+	-webkit-font-smoothing: inherit;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+
+	border-radius: 0;
+}
+%button-reset{
+	@extend %os-element-reset;
+	cursor: pointer;
+	white-space: inherit;
+	-webkit-box-sizing: content-box;
+	   -moz-box-sizing: content-box;
+	        box-sizing: content-box;
+
+	&::-moz-focus-inner {
+		padding: 0;
+		border: 0;
+	}
+}
+
+%text-field-reset {
+	@extend %os-element-reset;
+	padding: .1em .2em 0;
+	width: 100%;
+	-webkit-box-sizing: border-box;
+	   -moz-box-sizing: border-box;
+	        box-sizing: border-box;
+	// &:focus {
+	// 	outline: 1px solid;
+	// }
+}
+%textarea-reset {
+	@extend %text-field-reset;
+	resize: vertical;
+}
+
+%simple-checkbox-label-style{
+	padding-left: 1.1em;
+	padding-right: .5em;
+	cursor: pointer;
+	display: inline-block;
+	&:before{
+		content: '✓';
+		display: inline-block;
+		margin-right: .3em;
+
+		width: 0.6em;
+		height: 0.6em;
+		line-height: 0.4em;
+		margin-left: -0.98em;
+
+		color: transparent;
+		transition: 0.2s;
+		transition-property: color, text-shadow;
+		input:checked + &{
+			color: inherit;
+		}
+	}
+}
+%simple-radio-label-style{
+	@extend %simple-checkbox-label-style;
+	&:before{
+		border-radius: 50%;
+	}
+}
+%simple-button-style{
+	@extend %button-reset;
+
+	&:hover,
+	&:focus {
+  	opacity: .8;
+	}
+	&:active {
+	  position: relative;
+	  top: 1px;
+	}
+}
