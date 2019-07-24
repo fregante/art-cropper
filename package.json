@@ -1,8 +1,27 @@
 {
   "name": "",
-  "description": "",
-  "repo": "",
   "version": "1.0.0",
+  "description": "",
+  "repository": "fregante/art-cropper",
+  "browser": {
+    "lodash": "./app/bower_components/lodash/dist/lodash.js"
+  },
+  "browserify": {
+    "transform": [
+      "browserify-shim",
+      "deglobalify"
+    ]
+  },
+  "dependencies": {
+    "bloody-domready": "^0.1.1",
+    "drag-and-drop-files": "0.0.1",
+    "jszip": "^2.5.0",
+    "lodash-node": "^3.7.0",
+    "pica": "^1.0.7",
+    "promise-polyfill": "^2.0.0",
+    "raf": "^2.0.4",
+    "svg4everybody": "0.0.2"
+  },
   "devDependencies": {
     "autoprefixer-core": "^5.1.7",
     "babelify": "^5.0.4",
@@ -52,26 +71,7 @@
   "engines": {
     "node": ">=0.10.0"
   },
-  "browserify": {
-    "transform": [
-      "browserify-shim",
-      "deglobalify"
-    ]
-  },
-  "browser": {
-    "lodash": "./app/bower_components/lodash/dist/lodash.js"
-  },
   "browserify-shim": {
     "lodash": "global:lodash"
-  },
-  "dependencies": {
-    "bloody-domready": "^0.1.1",
-    "drag-and-drop-files": "0.0.1",
-    "jszip": "^2.5.0",
-    "lodash-node": "^3.7.0",
-    "pica": "^1.0.7",
-    "promise-polyfill": "^2.0.0",
-    "raf": "^2.0.4",
-    "svg4everybody": "0.0.2"
   }
 }
