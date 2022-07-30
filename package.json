@@ -1,7 +1,6 @@
 {
-  "name": "",
-  "description": "",
-  "repo": "",
+  "private": true,
+  "repository": "fregante/art-cropper",
   "version": "1.0.0",
   "devDependencies": {
     "autoprefixer-core": "^5.1.7",
@@ -54,6 +53,7 @@
   },
   "browserify": {
     "transform": [
+      "babelify",
       "browserify-shim",
       "deglobalify"
     ]

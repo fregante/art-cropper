@@ -1,85 +1,82 @@
 'use strict';
 var onDrop = require('drag-and-drop-files');
 var cutil = require('./_modules/canvas-utils.js');
-var fillCanvas = require('./_modules/canvas-draw-image-fill.js');
-var getImage = require('./_modules/image-loader.js');
+import fillCanvas from './_modules/canvas-draw-image-fill.js';
+import getImage from './_modules/image-loader.js';
+import getFillSize from './_modules/get-fill-size';
+import getMediaSize from './_modules/get-media-size.js';
+import containBetween from './_modules/math-contain.js';
+window.getFillSize = getFillSize;
+window.getMediaSize = getMediaSize;
 var saveAs = require('./_modules/save-file.js').saveAs;
 var select = require('./_modules/dom-select.js');
 var pica = require('pica');
 
-var dragging = false;
-var ondragend = function () {};
-document.documentElement.onmouseup = function () {
-	dragging = false;
-	if (ondragend) {
-		ondragend();
-		ondragend = null;
-	}
-};
+function draw (ctx, source, opts) {
+	let area = getMediaSize(ctx);
+	let content = getMediaSize(source);
+	let fill = getFillSize(area, content);
+	var width = source.width * fill.scale;
+	var height = source.height * fill.scale;
 
-function draw (ctx, image, opts) {
-	var t = fillCanvas.getTransforms(ctx, image, opts);
-
-	var width = image.width * t.scale;
-	var height = image.height * t.scale;
-	var scratch = cutil.getCanvas(width, height).el;
-	pica.resizeCanvas(cutil.getCanvasFromImage(image), scratch, {
+	var qualityResizedImage = cutil.getCanvas(width, height).el;
+	pica.resizeCanvas(cutil.getCanvasFromImage(source), qualityResizedImage, {
 		quality: 3
 	}, function () {
-		ctx.drawImage(scratch,
-			t.in.x * t.scale,
-			t.in.y * t.scale,
-			t.in.w * t.scale,
-			t.in.h * t.scale,
-			t.out.x,
-			t.out.y,
-			t.out.w,
-			t.out.h
-		);
+		fillCanvas(ctx, qualityResizedImage, opts);
 	});
 }
 var lastEvent;
-function createInteractiveCanvas (image, width, height, name) {
+function createInteractiveCanvas (source, width, height, name) {
 	var canvas = cutil.getCanvas(width, height);
-	draw(canvas.ctx, image);
+	let area = getMediaSize(canvas.ctx);
+	let content = getMediaSize(source);
+	let fill = getFillSize(area, content);
+	draw(canvas.ctx, source);
 
 	select.byId('images').appendChild(canvas.el);
 
-	var deltaX = 0;
-	var deltaY = 0;
-	canvas.el.onmousedown = function () {
-		// deltaX = 0;
-		// deltaY = 0;
-		dragging = true;
-	};
-	canvas.el.onmousemove = function (e) {
-		if (!dragging) {
-			return;
-		}
+	var offsetX = -fill.difference.width / 2;
+	var offsetY = -fill.difference.height / 2;
+	var opts;
+	function mousemove (e) {
 		if (lastEvent) {
-			deltaX += e.screenX - lastEvent.screenX;
-			deltaY += e.screenY - lastEvent.screenY;
+			offsetX -= e.screenX - lastEvent.screenX;
+			offsetY -= e.screenY - lastEvent.screenY;
 		}
+		offsetX = containBetween(offsetX, 0, -fill.difference.width);
+		offsetY = containBetween(offsetY, 0, -fill.difference.height);
 		lastEvent = e;
-		fillCanvas(canvas.ctx, image, {
-			offsetX: deltaX,
-			offsetY: deltaY,
-		});
-
-		ondragend = function () {
-			lastEvent = null;
-			draw(canvas.ctx, image, {
-				offsetX: deltaX,
-				offsetY: deltaY,
-			});
+		opts = {
+			offset: {
+				x: offsetX,
+				y: offsetY,
+			}
 		};
-	};
+		fillCanvas(canvas.ctx, source, opts);
+	}
+	function mouseup () {
+		lastEvent = null;
+		draw(canvas.ctx, source, opts);
+		window.removeEventListener('mousemove', mousemove);
+		window.removeEventListener('mouseup', mouseup);
+	}
+	function mousedown () {
+		window.addEventListener('mousemove', mousemove);
+		window.addEventListener('mouseup', mouseup);
+	}
+	canvas.el.onmousedown = mousedown;
 	canvas.el.__name = name;
 	return canvas;
 }
+
 var counter = select.byId('counter');
 var configEl = select.byId('config');
 onDrop(document.documentElement, function (files) {
+	if(!configEl.value) {
+		console.warn('using default config');
+		configEl.value = '200x200,video-thumb';
+	}
 	var config = configEl.value.split(';').map(function (current) {
 		current = current.split(',');
 		var size = current[0].split('x');
@@ -91,8 +88,7 @@ onDrop(document.documentElement, function (files) {
 	});
 
 	files.forEach(function (file) {
-		getImage(URL.createObjectURL(file), function () {
-			var file = this;
+		getImage(URL.createObjectURL(file)).then(function (file) {
 			config.forEach(function (image) {
 				createInteractiveCanvas(file, image.width, image.height, image.filename.replace(/#/g, counter.value));
 			});
